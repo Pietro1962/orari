@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prototipi Tabellone Orari DESF - Presentazione Direttore</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        body { background: #020617; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+        header { text-align: center; max-width: 900px; margin-bottom: 40px; }
+        header h1 { font-size: 2.8rem; color: #38bdf8; font-weight: 900; margin-bottom: 10px; letter-spacing: 0.5px; }
+        header p { font-size: 1.4rem; color: #94a3b8; font-weight: 600; }
+        .container { width: 100%; max-width: 1100px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        .proto-card { background: #0f172a; border: 2px solid #1e293b; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .proto-card:hover { transform: translateY(-5px); border-color: #38bdf8; box-shadow: 0 15px 35px rgba(56, 189, 248, 0.2); }
+        .proto-num { font-size: 0.9rem; font-weight: 800; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; display: inline-block; margin-bottom: 12px; width: fit-content; }
+        .p1 .proto-num { background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid #38bdf8; }
+        .p2 .proto-num { background: rgba(52, 211, 153, 0.2); color: #34d399; border: 1px solid #34d399; }
+        .p3 .proto-num { background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid #fbbf24; }
+        .p4 .proto-num { background: rgba(244, 114, 182, 0.2); color: #f472b6; border: 1px solid #f472b6; }
+        .p5 .proto-num { background: rgba(167, 139, 250, 0.2); color: #a78bfa; border: 1px solid #a78bfa; }
+        .proto-title { font-size: 1.6rem; font-weight: 800; color: #ffffff; margin-bottom: 10px; line-height: 1.3; }
+        .proto-desc { font-size: 1.1rem; color: #94a3b8; line-height: 1.5; margin-bottom: 24px; }
+        .btn-open { display: block; text-align: center; text-decoration: none; padding: 12px 20px; border-radius: 10px; font-weight: 800; font-size: 1.1rem; transition: background 0.2s ease; }
+        .p1 .btn-open { background: #0284c7; color: #fff; }
+        .p1 .btn-open:hover { background: #0369a1; }
+        .p2 .btn-open { background: #059669; color: #fff; }
+        .p2 .btn-open:hover { background: #047857; }
+        .p3 .btn-open { background: #d97706; color: #fff; }
+        .p3 .btn-open:hover { background: #b45309; }
+        .p4 .btn-open { background: #db2777; color: #fff; }
+        .p4 .btn-open:hover { background: #be185d; }
+        .p5 .btn-open { background: #7c3aed; color: #fff; }
+        .p5 .btn-open:hover { background: #6d28d9; }
+        footer { margin-top: 50px; color: #64748b; font-size: 1rem; text-align: center; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>PROTOTIPI TABELLONE ATRIO DESF</h1>
+        <p>Seleziona una delle soluzioni grafiche progettate per lo schermo ad alta quota (4 metri)</p>
+    </header>
+    <div class="container">
+        <div class="proto-card p1">
+            <div>
+                <span class="proto-num">Prototipo 1</span>
+                <h2 class="proto-title">CdL Focus (Singolo Corso)</h2>
+                <p class="proto-desc">Mostra un solo Corso di Laurea e Anno per volta con carattere Maxi e colore del foglio Excel originale. Elimina ogni confusione per gli studenti.</p>
+            </div>
+            <a href="prototipo1.html" class="btn-open">Apri Prototipo 1 &rarr;</a>
+        </div>
+        <div class="proto-card p2">
+            <div>
+                <span class="proto-num">Prototipo 2</span>
+                <h2 class="proto-title">Griglia a 3 Colonne Affiancate</h2>
+                <p class="proto-desc">Mantiene la struttura a colonne affiancate dello schedario Excel originale. Mostra 3 Corsi di Laurea contemporaneamente.</p>
+            </div>
+            <a href="prototipo2.html" class="btn-open">Apri Prototipo 2 &rarr;</a>
+        </div>
+        <div class="proto-card p3">
+            <div>
+                <span class="proto-num">Prototipo 3</span>
+                <h2 class="proto-title">Timeline Cronologica per Orario</h2>
+                <p class="proto-desc">Ordina le lezioni del giorno rigorosamente per orario (09-11, 11-13, 14-16), mantenendo i badge colorati dei Corsi di Laurea.</p>
+            </div>
+            <a href="prototipo3.html" class="btn-open">Apri Prototipo 3 &rarr;</a>
+        </div>
+        <div class="proto-card p4">
+            <div>
+                <span class="proto-num">Prototipo 4</span>
+                <h2 class="proto-title">Coppie di CdL Affiancati (Maxi)</h2>
+                <p class="proto-desc">Suddivide lo schermo in 2 maxi-sezioni per confrontare due Corsi di Laurea correlati (es. 1° e 2° Anno) con caratteri ad altissimo contrasto.</p>
+            </div>
+            <a href="prototipo4.html" class="btn-open">Apri Prototipo 4 &rarr;</a>
+        </div>
+        <div class="proto-card p5">
+            <div>
+                <span class="proto-num">Prototipo 5</span>
+                <h2 class="proto-title">Tabella Orizzontale a Righe</h2>
+                <p class="proto-desc">Layout tabellare rettangolare stile stazione/aeroporto. Formale, pulito ed elegante con evidenziazione chiara delle aule.</p>
+            </div>
+            <a href="prototipo5.html" class="btn-open">Apri Prototipo 5 &rarr;</a>
+        </div>
+    </div>
+    <footer>
+        <p>Dipartimento di Economia, Statistica e Finanza "Giovanni Anania" &bull; Università della Calabria</p>
+    </footer>
+</body>
+</html>
