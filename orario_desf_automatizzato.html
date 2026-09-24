@@ -231,7 +231,6 @@
             setInterval(updateClock, 1000);
             setInterval(nextRotation, ROTATION_INTERVAL_MS);
 
-            // Caricamento dinamico dei dati reali da lessons_data.json
             fetch('lessons_data.json')
                 .then(res => res.json())
                 .then(data => {
