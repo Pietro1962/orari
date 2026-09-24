@@ -216,11 +216,11 @@
     <script>
         let allLessons = [];
         const cdlDefinitions = [
-            { code: 'ECONOMIA', name: 'CdL Triennale in Economia', type: 'Triennale', years: [1, 2, 3] },
-            { code: 'SDS', name: 'CdL Triennale in Statistica per Data Science', type: 'Triennale', years: [1, 2, 3] },
-            { code: 'EIS', name: 'CdL Magistrale in Economia, Imprese e Sostenibilità', type: 'Magistrale', years: [1, 2] },
-            { code: 'DSSA', name: 'CdL Magistrale in Data Science per le Strategie Aziendali', type: 'Magistrale', years: [1, 2] },
-            { code: 'FINANCE', name: 'CdL Magistrale in Finance and Insurance', type: 'Magistrale', years: [1, 2] }
+            { code: 'ECONOMIA', name: 'CdL Triennale in Economia', type: 'Triennale', years: [1, 2, 3], defaultColor: '#1e3a8a' },
+            { code: 'SDS', name: 'CdL Triennale in Statistica per Data Science', type: 'Triennale', years: [1, 2, 3], defaultColor: '#047857' },
+            { code: 'EIS', name: 'CdL Magistrale in Economia, Imprese e Sostenibilità', type: 'Magistrale', years: [1, 2], defaultColor: '#9a3412' },
+            { code: 'DSSA', name: 'CdL Magistrale in Data Science per le Strategie Aziendali', type: 'Magistrale', years: [1, 2], defaultColor: '#6b21a8' },
+            { code: 'FINANCE', name: 'CdL Magistrale in Finance and Insurance', type: 'Magistrale', years: [1, 2], defaultColor: '#831843' }
         ];
         const ROTATION_INTERVAL_MS = 18000;
         let currentScreenIndex = 0;
@@ -234,7 +234,19 @@
             fetch('lessons_data.json')
                 .then(res => res.json())
                 .then(data => {
-                    allLessons = data.map(item => ({
+                    // De-duplicazione iniziale sui dati scaricati
+                    const uniqueData = [];
+                    const seenKeys = new Set();
+
+                    data.forEach(item => {
+                        const key = `${item.cdl_code}_${item.anno}_${item.giorno}_${item.orario}_${item.materia}_${item.docente}_${item.aula}`.toLowerCase();
+                        if (!seenKeys.has(key)) {
+                            seenKeys.add(key);
+                            uniqueData.push(item);
+                        }
+                    });
+
+                    allLessons = uniqueData.map(item => ({
                         ...item,
                         year_order: parseInt(item.anno) || 1
                     }));
@@ -293,7 +305,8 @@
                 const colEl = document.createElement('div');
                 colEl.className = 'col-box';
                 const sampleLesson = yrLessons[0] || allLessons.find(l => l.cdl_code === def.code && l.year_order === yr);
-                const headerColor = sampleLesson ? sampleLesson.color : '#1e3a8a';
+                
+                const headerColor = sampleLesson ? sampleLesson.color : def.defaultColor;
 
                 let bodyContent = '';
                 if (yrLessons.length === 0) {
