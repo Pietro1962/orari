@@ -1,0 +1,30 @@
+name: Aggiornamento Automatico Orari Cineca
+
+on:
+  schedule:
+    # Esegue l'aggiornamento automatico ogni notte alle 02:00
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Permette l'avvio manuale con un click
+
+jobs:
+  update-schedules:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configura Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Scarica orari aggiornati da UP Cineca
+        run: python fetch_schedules.py
+
+      - name: Salva e pubblica aggiornamenti
+        run: |
+          git config --global user.name 'GitHub Automation'
+          git config --global user.email 'automation@github.com'
+          git add lessons_data.json
+          git commit -m "Auto-update orari lezioni A.A. 2026/2027" || exit 0
+          git push
