@@ -24,36 +24,80 @@ ULTIMA_DATA = "2027-07-31T23:59:59.000Z"
 all_lessons = []
 giorni_map = {0: 'Lunedì', 1: 'Martedì', 2: 'Mercoledì', 3: 'Giovedì', 4: 'Venerdì', 5: 'Sabato', 6: 'Domenica'}
 
-for cal in CALENDARI:
-    # URL di chiamata per l'API Cineca UP senza prefisso porta
-    base_url = "https://unical.prod.up.cineca.it/api/getEventiCalendarioPubblico"
-    params = urllib.parse.urlencode({
-        'linkCalendarioId': cal['id'],
-        'primaData': PRIMA_DATA,
-        'ultimaData': ULTIMA_DATA
-    })
-    
-    url = f"{base_url}?{params}"
-    
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'application/json, text/plain, */*',
-        'Referer': f"https://unical.prod.up.cineca.it/calendarioPubblico/linkCalendarioId={cal['id']}"
-    }
-    
-    eventi = []
-    try:
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req) as response:
-            data = json.loads(response.read().decode('utf-8'))
-            if isinstance(data, list):
-                eventi = data
-            elif isinstance(data, dict):
-                eventi = data.get('eventi', data.get('eventiCalendario', []))
-    except Exception as e:
-        print(f"[{cal['sheet']}] Avviso recupero API: {e}")
+# Candidate endpoints di UP Cineca
+CANDIDATES = [
+    "https://unical.prod.up.cineca.it/api/CalendarioPubblico/getEventiCalendarioPubblico",
+    "https://unical.prod.up.cineca.it/api/getEventiCalendarioPubblico",
+    "https://unical.prod.up.cineca.it/calendarioPubblico/getEventiCalendarioPubblico"
+]
 
-    print(f"[{cal['sheet']}] Estratti {len(eventi)} eventi.")
+for cal in CALENDARI:
+    eventi = []
+    
+    # 1. Prova via POST JSON
+    for endpoint in CANDIDATES:
+        try:
+            payload = json.dumps({
+                "linkCalendarioId": cal["id"],
+                "primaData": PRIMA_DATA,
+                "ultimaData": ULTIMA_DATA,
+                "mostraAnnullati": False,
+                "mostraBloccati": False
+            }).encode('utf-8')
+            
+            headers = {
+                'Content-Type': 'application/json;charset=UTF-8',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'application/json, text/plain, */*',
+                'Origin': 'https://unical.prod.up.cineca.it',
+                'Referer': f"https://unical.prod.up.cineca.it/calendarioPubblico/linkCalendarioId={cal['id']}"
+            }
+            
+            req = urllib.request.Request(endpoint, data=payload, headers=headers, method='POST')
+            with urllib.request.urlopen(req) as response:
+                data = json.loads(response.read().decode('utf-8'))
+                if isinstance(data, list):
+                    eventi = data
+                elif isinstance(data, dict):
+                    eventi = data.get('eventi', data.get('eventiCalendario', []))
+                if eventi:
+                    print(f"[{cal['sheet']}] Recuperati {len(eventi)} eventi con successo (POST {endpoint}).")
+                    break
+        except Exception:
+            continue
+
+    # 2. Fallback via GET se la POST fallisce
+    if not eventi:
+        for endpoint in CANDIDATES:
+            try:
+                query = urllib.parse.urlencode({
+                    'linkCalendarioId': cal['id'],
+                    'primaData': PRIMA_DATA,
+                    'ultimaData': ULTIMA_DATA,
+                    'mostraAnnullati': 'false',
+                    'mostraBloccati': 'false'
+                })
+                url = f"{endpoint}?{query}"
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    'Accept': 'application/json, text/plain, */*',
+                    'Referer': f"https://unical.prod.up.cineca.it/calendarioPubblico/linkCalendarioId={cal['id']}"
+                }
+                req = urllib.request.Request(url, headers=headers)
+                with urllib.request.urlopen(req) as response:
+                    data = json.loads(response.read().decode('utf-8'))
+                    if isinstance(data, list):
+                        eventi = data
+                    elif isinstance(data, dict):
+                        eventi = data.get('eventi', data.get('eventiCalendario', []))
+                    if eventi:
+                        print(f"[{cal['sheet']}] Recuperati {len(eventi)} eventi con successo (GET {endpoint}).")
+                        break
+            except Exception:
+                continue
+
+    if not eventi:
+        print(f"[{cal['sheet']}] Nessun evento restituito. Verificare la disponibilità sull'interfaccia UP Cineca.")
 
     for ev in eventi:
         materia = ev.get('title', ev.get('insegnamento', ev.get('nomeEvent', 'Lezione')))
@@ -98,8 +142,7 @@ for cal in CALENDARI:
         }
         all_lessons.append(lesson_obj)
 
-# Salvataggio dati scaricati nel JSON
 with open('lessons_data.json', 'w', encoding='utf-8') as f:
     json.dump(all_lessons, f, ensure_ascii=False, indent=4)
 
-print(f"\n--- COMPLETATO --- Totale lezioni scaricate: {len(all_lessons)}")
+print(f"\n--- COMPLETATO --- Totale lezioni scaricate per A.A. 2026/2027: {len(all_lessons)}")
