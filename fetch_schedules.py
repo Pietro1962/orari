@@ -3,7 +3,7 @@ import urllib.request
 import urllib.parse
 from datetime import datetime
 
-# Mappa dei 12 calendari basata sulle API ufficiali UniCal Storage
+# Mappa dei 12 calendari per l'A.A. 2026/2027
 CALENDARI = [
     # Triennali
     {"sheet": "Economia I", "cdl_code": "ECONOMIA", "cdl_name": "CdL Triennale in Economia", "cdl_type": "Triennale", "year_order": 1, "anno": "1° anno", "color": "#1e3a8a", "cdscod": "0733", "year": 1},
@@ -29,7 +29,7 @@ ACADEMIC_YEAR = 2026
 all_lessons = []
 giorni_map = {0: 'Lunedì', 1: 'Martedì', 2: 'Mercoledì', 3: 'Giovedì', 4: 'Venerdì', 5: 'Sabato', 6: 'Domenica'}
 
-# Mesi del semestre (Settembre - Febbraio)
+# Mesi del primo semestre A.A. 2026/2027
 mesi = [9, 10, 11, 12, 1, 2]
 
 headers = {
@@ -42,37 +42,74 @@ for cal in CALENDARI:
     
     for m in mesi:
         year_val = ACADEMIC_YEAR if m >= 9 else ACADEMIC_YEAR + 1
-        url = f"https://storage.portale.unical.it/api/ricerca/cds-websites/{cal['cdscod']}/timetable/?lang=it&academic_year={ACADEMIC_YEAR}&year={cal['year']}&date_year={year_val}&date_month={m}&search_teacher=&search_location=&af_cod="
+        month_str = f"{m:02d}"
+        
+        url = f"https://storage.portale.unical.it/api/ricerca/cds-websites/{cal['cdscod']}/timetable/?lang=it&academic_year={ACADEMIC_YEAR}&year={cal['year']}&date_year={year_val}&date_month={month_str}&search_teacher=&search_location=&af_cod="
         
         try:
             req = urllib.request.Request(url, headers=headers)
             with urllib.request.urlopen(req) as response:
                 data = json.loads(response.read().decode('utf-8'))
                 
-                # La risposta può essere una lista o un dizionario contenente la chiave 'results' / 'timetable'
-                items = []
+                # Estrazione flessibile della lista eventi da qualunque struttura ritorni la risposta
+                raw_items = []
                 if isinstance(data, list):
-                    items = data
+                    raw_items = data
                 elif isinstance(data, dict):
-                    items = data.get('results', data.get('timetable', data.get('events', [])))
-                
-                for item in items:
-                    materia = item.get('title', item.get('af_name', item.get('description', 'Lezione')))
-                    docente = item.get('teacher', item.get('teacher_name', 'Docente da definire'))
-                    aula = item.get('location', item.get('building', 'Aula TBD'))
+                    if 'results' in data:
+                        res = data['results']
+                        if isinstance(res, list):
+                            raw_items = res
+                        elif isinstance(res, dict):
+                            for v in res.values():
+                                if isinstance(v, list): raw_items.extend(v)
+                    elif 'timetable' in data:
+                        tt = data['timetable']
+                        if isinstance(tt, list):
+                            raw_items = tt
+                        elif isinstance(tt, dict):
+                            for v in tt.values():
+                                if isinstance(v, list): raw_items.extend(v)
+                    else:
+                        for v in data.values():
+                            if isinstance(v, list): raw_items.extend(v)
+
+                for item in raw_items:
+                    if not isinstance(item, dict):
+                        continue
+                        
+                    materia = item.get('activity_name') or item.get('af_name') or item.get('title') or item.get('description') or 'Lezione'
+                    docente = item.get('teacher_name') or item.get('teacher') or item.get('docente') or 'Docente da definire'
+                    aula = item.get('location') or item.get('building') or item.get('aula') or 'Aula TBD'
                     
-                    start_str = item.get('start', item.get('start_time'))
-                    end_str = item.get('end', item.get('end_time'))
+                    # Recupero date e orari
+                    date_str = item.get('date') or item.get('day')
+                    start_time = item.get('time_start') or item.get('start_time') or item.get('start')
+                    end_time = item.get('time_end') or item.get('end_time') or item.get('end')
                     
-                    if not start_str or not end_str:
+                    # Parsing della data
+                    if date_str:
+                        try:
+                            dt_obj = datetime.strptime(date_str[:10], '%Y-%m-%d')
+                            data_formatted = dt_obj.strftime('%Y-%m-%d')
+                            giorno_str = giorni_map.get(dt_obj.weekday(), '')
+                        except Exception:
+                            continue
+                    elif start_time and 'T' in str(start_time):
+                        try:
+                            dt_obj = datetime.fromisoformat(str(start_time).replace('Z', '+00:00'))
+                            data_formatted = dt_obj.strftime('%Y-%m-%d')
+                            giorno_str = giorni_map.get(dt_obj.weekday(), '')
+                            start_time = dt_obj.strftime('%H:%M')
+                            if end_time and 'T' in str(end_time):
+                                end_dt = datetime.fromisoformat(str(end_time).replace('Z', '+00:00'))
+                                end_time = end_dt.strftime('%H:%M')
+                        except Exception:
+                            continue
+                    else:
                         continue
 
-                    # Parsing della data/ora
-                    try:
-                        start_dt = datetime.fromisoformat(start_str.replace('Z', '+00:00'))
-                        end_dt = datetime.fromisoformat(end_str.replace('Z', '+00:00'))
-                    except Exception:
-                        continue
+                    orario_str = f"{start_time} - {end_time}" if start_time and end_time else "Orario non specificato"
 
                     lesson_obj = {
                         "sheet": cal["sheet"],
@@ -82,9 +119,9 @@ for cal in CALENDARI:
                         "year_order": cal["year_order"],
                         "anno": cal["anno"],
                         "color": cal["color"],
-                        "data": start_dt.strftime('%Y-%m-%d'),
-                        "giorno": giorni_map.get(start_dt.weekday(), ''),
-                        "orario": f"{start_dt.strftime('%H:%M')} - {end_dt.strftime('%H:%M')}",
+                        "data": data_formatted,
+                        "giorno": giorno_str,
+                        "orario": orario_str,
                         "materia": materia,
                         "docente": docente,
                         "aula": aula
