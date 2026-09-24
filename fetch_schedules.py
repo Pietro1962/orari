@@ -18,7 +18,6 @@ CALENDARI = [
     {"sheet": "Finance II", "cdl_code": "FINANCE", "cdl_name": "CdL Magistrale in Finance and Insurance", "cdl_type": "Magistrale", "year_order": 2, "anno": "2° anno", "color": "#9f1239", "id": "6a6326b34a237300196859e1"}
 ]
 
-# Calcolo dinamico date: dagli ultimi 6 mesi ai prossimi 6 mesi
 now = datetime.now()
 prima_dt = now - timedelta(days=180)
 ultima_dt = now + timedelta(days=180)
@@ -26,84 +25,89 @@ ultima_dt = now + timedelta(days=180)
 PRIMA_DATA = prima_dt.strftime('%Y-%m-%d')
 ULTIMA_DATA = ultima_dt.strftime('%Y-%m-%d')
 
-print(f"Intervallo di ricerca: da {PRIMA_DATA} a {ULTIMA_DATA}")
-
 all_lessons = []
 giorni_map = {0: 'Lunedì', 1: 'Martedì', 2: 'Mercoledì', 3: 'Giovedì', 4: 'Venerdì', 5: 'Sabato', 6: 'Domenica'}
 
+# Endpoint alternativi usati da UP Cineca
+ENDPOINTS = [
+    "https://unical.prod.up.cineca.it/api/getEventiCalendarioPubblico",
+    "https://unical.prod.up.cineca.it/api/Calendario/getEventiCalendarioPubblico",
+    "https://unical.prod.up.cineca.it/calendarioPubblico/getEventiCalendarioPubblico"
+]
+
 for cal in CALENDARI:
-    params = urllib.parse.urlencode({
-        'linkCalendarioId': cal['id'],
-        'primaData': PRIMA_DATA,
-        'ultimaData': ULTIMA_DATA,
-        'mostraAnnullati': 'false',
-        'mostraBloccati': 'false'
-    })
-    url = f"https://unical.prod.up.cineca.it/api/CalendarioPubblico/getEventiCalendarioPubblico?{params}"
-    
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'application/json, text/plain, */*'
-    }
-    
-    req = urllib.request.Request(url, headers=headers)
-    
-    try:
-        with urllib.request.urlopen(req) as response:
-            res_body = response.read().decode('utf-8')
-            data = json.loads(res_body)
-            
-            eventi = []
-            if isinstance(data, list):
-                eventi = data
-            elif isinstance(data, dict):
-                eventi = data.get('eventi', data.get('eventiCalendario', []))
+    eventi = []
+    for base_url in ENDPOINTS:
+        params = urllib.parse.urlencode({
+            'linkCalendarioId': cal['id'],
+            'primaData': PRIMA_DATA,
+            'ultimaData': ULTIMA_DATA,
+            'mostraAnnullati': 'false',
+            'mostraBloccati': 'false'
+        })
+        url = f"{base_url}?{params}"
+        req = urllib.request.Request(url, headers={
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept': 'application/json, text/plain, */*'
+        })
+        try:
+            with urllib.request.urlopen(req) as response:
+                if response.status == 200:
+                    data = json.loads(response.read().decode('utf-8'))
+                    if isinstance(data, list):
+                        eventi = data
+                    elif isinstance(data, dict):
+                        eventi = data.get('eventi', data.get('eventiCalendario', []))
+                    if eventi:
+                        print(f"[{cal['sheet']}] Trovati {len(eventi)} eventi tramite endpoint: {base_url}")
+                        break
+        except Exception:
+            continue
 
-            print(f"[{cal['sheet']}] Trovati {len(eventi)} eventi da API Cineca.")
+    if not eventi:
+        print(f"[{cal['sheet']}] Nessun evento estratto (verificare l'ID calendario).")
 
-            for ev in eventi:
-                materia = ev.get('title', ev.get('insegnamento', ev.get('nomeEvent', 'Lezione')))
-                
-                docenti_list, aule_list = [], []
-                for res in ev.get('risorse', []):
-                    tipo = str(res.get('type', '') or res.get('tipo', '')).upper()
-                    nome = res.get('nome', '') or res.get('description', '')
-                    if 'DOCENTE' in tipo:
-                        docenti_list.append(nome)
-                    elif 'AULA' in tipo:
-                        aule_list.append(nome)
-                
-                docente = ", ".join(docenti_list) if docenti_list else ev.get('docente', 'Docente da definire')
-                aula = ", ".join(aule_list) if aule_list else ev.get('aula', 'Aula TBD')
-                
-                start_raw = ev.get('start', ev.get('oraInizio'))
-                end_raw = ev.get('end', ev.get('oraFine'))
-                if not start_raw or not end_raw:
-                    continue
+    for ev in eventi:
+        materia = ev.get('title', ev.get('insegnamento', ev.get('nomeEvent', 'Lezione')))
+        
+        docenti_list, aule_list = [], []
+        for res in ev.get('risorse', []):
+            tipo = str(res.get('type', '') or res.get('tipo', '')).upper()
+            nome = res.get('nome', '') or res.get('description', '')
+            if 'DOCENTE' in tipo:
+                docenti_list.append(nome)
+            elif 'AULA' in tipo:
+                aule_list.append(nome)
+        
+        docente = ", ".join(docenti_list) if docenti_list else ev.get('docente', 'Docente da definire')
+        aula = ", ".join(aule_list) if aule_list else ev.get('aula', 'Aula TBD')
+        
+        start_raw = ev.get('start', ev.get('oraInizio'))
+        end_raw = ev.get('end', ev.get('oraFine'))
+        if not start_raw or not end_raw:
+            continue
 
-                start_dt = datetime.fromisoformat(start_raw.replace('Z', '+00:00'))
-                end_dt = datetime.fromisoformat(end_raw.replace('Z', '+00:00'))
-                
-                lesson_obj = {
-                    "sheet": cal["sheet"],
-                    "cdl_code": cal["cdl_code"],
-                    "cdl_name": cal["cdl_name"],
-                    "cdl_type": cal["cdl_type"],
-                    "year_order": cal["year_order"],
-                    "anno": cal["anno"],
-                    "color": cal["color"],
-                    "data": start_dt.strftime('%Y-%m-%d'),
-                    "giorno": giorni_map.get(start_dt.weekday(), ''),
-                    "orario": f"{start_dt.strftime('%H:%M')} - {end_dt.strftime('%H:%M')}",
-                    "materia": materia,
-                    "docente": docente,
-                    "aula": aula
-                }
-                all_lessons.append(lesson_obj)
-    except Exception as e:
-        print(f"Errore recupero {cal['sheet']}: {e}")
+        start_dt = datetime.fromisoformat(start_raw.replace('Z', '+00:00'))
+        end_dt = datetime.fromisoformat(end_raw.replace('Z', '+00:00'))
+        
+        lesson_obj = {
+            "sheet": cal["sheet"],
+            "cdl_code": cal["cdl_code"],
+            "cdl_name": cal["cdl_name"],
+            "cdl_type": cal["cdl_type"],
+            "year_order": cal["year_order"],
+            "anno": cal["anno"],
+            "color": cal["color"],
+            "data": start_dt.strftime('%Y-%m-%d'),
+            "giorno": giorni_map.get(start_dt.weekday(), ''),
+            "orario": f"{start_dt.strftime('%H:%M')} - {end_dt.strftime('%H:%M')}",
+            "materia": materia,
+            "docente": docente,
+            "aula": aula
+        }
+        all_lessons.append(lesson_obj)
 
 with open('lessons_data.json', 'w', encoding='utf-8') as f:
     json.dump(all_lessons, f, ensure_ascii=False, indent=4)
 
-print(f"\n--- COMPLETATO --- Totale lezioni estratte e salvate: {len(all_lessons)}")
+print(f"\n--- COMPLETATO --- Totale lezioni scaricate: {len(all_lessons)}")
