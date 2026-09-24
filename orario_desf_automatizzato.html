@@ -1,1 +1,235 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabellone Orari DESF Automatizzato A.A. 2026/2027</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-bg: #f8fafc;
+            --card-border-radius: 12px;
+        }
+        body {
+            background-color: var(--primary-bg);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: #1e293b;
+        }
+        .header-title {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: white;
+            border-radius: var(--card-border-radius);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .card-course {
+            border: none;
+            border-radius: var(--card-border-radius);
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .card-course:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .badge-year {
+            font-size: 0.8rem;
+            padding: 0.4em 0.8em;
+            border-radius: 20px;
+        }
+        .table-schedule {
+            font-size: 0.9rem;
+        }
+        .table-schedule th {
+            background-color: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+        }
+        .live-pulse {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 0 rgba(34, 197, 94, 0.4);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+    </style>
+</head>
+<body>
 
+<div class="container py-4">
+    <!-- Header -->
+    <div class="header-title mb-4 d-flex justify-content-between align-items-center flex-wrap">
+        <div>
+            <h2 class="m-0 font-weight-bold"><i class="fa-solid fa-graduation-cap me-2"></i>Orario Lezioni DESF - UniCal</h2>
+            <p class="m-0 text-white-50 mt-1">Anno Accademico 2026/2027 • Aggiornamento Automatico Hands-Free</p>
+        </div>
+        <div class="text-end mt-2 mt-md-0">
+            <span class="badge bg-success d-inline-flex align-items-center gap-2 px-3 py-2">
+                <span class="live-pulse"></span> Sistema Attivo
+            </span>
+        </div>
+    </div>
+
+    <!-- Filtri di ricerca -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <input type="text" id="searchInput" class="form-control form-control-lg shadow-sm" placeholder="🔍 Cerca materia, docente o aula...">
+        </div>
+        <div class="col-md-4">
+            <select id="courseFilter" class="form-select form-select-lg shadow-sm">
+                <option value="ALL">Tutti i Corsi di Laurea</option>
+                <option value="ECONOMIA">Economia (L-33)</option>
+                <option value="SDS">Statistica per Data Science (L-41)</option>
+                <option value="EIS">Economia, Imprese e Sostenibilità (LM-56)</option>
+                <option value="DSSA">Data Science per le Strategie Aziendali (LM-91)</option>
+                <option value="FINANCE">Finance and Insurance (LM-16)</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <select id="yearFilter" class="form-select form-select-lg shadow-sm">
+                <option value="ALL">Tutti gli Anni di corso</option>
+                <option value="1° anno">1° Anno</option>
+                <option value="2° anno">2° Anno</option>
+                <option value="3° anno">3° Anno</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Contenitore Tabelloni -->
+    <div id="lessonsContainer" class="row g-4">
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2 text-muted">Caricamento lezioni in corso...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+let rawLessonsData = [];
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetch('lessons_data.json')
+        .then(res => {
+            if (!res.ok) throw new Error('File JSON non trovato');
+            return res.json();
+        })
+        .then(data => {
+            rawLessonsData = data;
+            renderBoard(data);
+        })
+        .catch(err => {
+            document.getElementById('lessonsContainer').innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <div class="alert alert-warning d-inline-block">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        Impossibile caricare i dati degli orari. Verifica che <code>lessons_data.json</code> sia disponibile.
+                    </div>
+                </div>`;
+        });
+
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+    document.getElementById('courseFilter').addEventListener('change', applyFilters);
+    document.getElementById('yearFilter').addEventListener('change', applyFilters);
+});
+
+function applyFilters() {
+    const searchStr = document.getElementById('searchInput').value.toLowerCase();
+    const selectedCourse = document.getElementById('courseFilter').value;
+    const selectedYear = document.getElementById('yearFilter').value;
+
+    const filtered = rawLessonsData.filter(item => {
+        const matchesSearch = (item.materia || '').toLowerCase().includes(searchStr) ||
+                              (item.docente || '').toLowerCase().includes(searchStr) ||
+                              (item.aula || '').toLowerCase().includes(searchStr);
+        const matchesCourse = selectedCourse === 'ALL' || item.cdl_code === selectedCourse;
+        const matchesYear = selectedYear === 'ALL' || item.anno === selectedYear;
+
+        return matchesSearch && matchesCourse && matchesYear;
+    });
+
+    renderBoard(filtered);
+}
+
+function renderBoard(data) {
+    const container = document.getElementById('lessonsContainer');
+    
+    if (data.length === 0) {
+        container.innerHTML = `
+            <div class="col-12 text-center py-5">
+                <div class="alert alert-info d-inline-block">
+                    Nessuna lezione trovata con i filtri selezionati.
+                </div>
+            </div>`;
+        return;
+    }
+
+    // Raggruppamento per Corso e Anno
+    const groups = {};
+    data.forEach(item => {
+        const key = `${item.cdl_name} - ${item.anno}`;
+        if (!groups[key]) groups[key] = { meta: item, lessons: [] };
+        groups[key].lessons.push(item);
+    });
+
+    let html = '';
+    Object.keys(groups).forEach(groupKey => {
+        const group = groups[groupKey];
+        const meta = group.meta;
+        const lessons = group.lessons;
+
+        html += `
+        <div class="col-12 mb-3">
+            <div class="card card-course shadow-sm">
+                <div class="card-header bg-white border-0 pt-3 pb-2 d-flex justify-content-between align-items-center">
+                    <h5 class="m-0 font-weight-bold" style="color: ${meta.color || '#1e3a8a'}">
+                        <i class="fa-solid fa-book-open me-2"></i>${meta.cdl_name}
+                    </h5>
+                    <span class="badge badge-year text-white" style="background-color: ${meta.color || '#1e3a8a'}">
+                        ${meta.anno}
+                    </span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-schedule m-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th style="width: 120px;">Data</th>
+                                    <th style="width: 100px;">Giorno</th>
+                                    <th style="width: 140px;">Orario</th>
+                                    <th>Insegnamento</th>
+                                    <th>Docente</th>
+                                    <th>Aula</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${lessons.map(l => `
+                                    <tr>
+                                        <td><i class="fa-regular fa-calendar me-1 text-muted"></i><strong>${l.data}</strong></td>
+                                        <td><span class="badge bg-light text-dark border">${l.giorno}</span></td>
+                                        <td><i class="fa-regular fa-clock me-1 text-muted"></i>${l.orario}</td>
+                                        <td class="fw-semibold text-primary">${l.materia}</td>
+                                        <td><i class="fa-solid fa-user-tie me-1 text-muted"></i>${l.docente}</td>
+                                        <td><span class="badge bg-success-subtle text-success border border-success-subtle"><i class="fa-solid fa-location-dot me-1"></i>${l.aula}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    });
+
+    container.innerHTML = html;
+}
+</script>
+</body>
+</html>
