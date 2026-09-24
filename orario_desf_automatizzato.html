@@ -23,18 +23,51 @@
             padding: 1.5rem 2rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
+        .nav-tabs-custom {
+            border-bottom: 2px solid #e2e8f0;
+            gap: 0.5rem;
+        }
+        .nav-tabs-custom .nav-link {
+            border: none;
+            border-radius: 10px 10px 0 0;
+            padding: 0.8rem 1.2rem;
+            font-weight: 600;
+            color: #64748b;
+            background-color: #ffffff;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+        .nav-tabs-custom .nav-link:hover {
+            color: #1e3a8a;
+            background-color: #f1f5f9;
+        }
+        .nav-tabs-custom .nav-link.active {
+            color: #ffffff !important;
+            background-color: #1e3a8a !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .section-header-triennale {
+            border-left: 5px solid #1e3a8a;
+            padding-left: 10px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            color: #1e3a8a;
+        }
+        .section-header-magistrale {
+            border-left: 5px solid #9a3412;
+            padding-left: 10px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            color: #9a3412;
+        }
         .card-course {
             border: none;
             border-radius: var(--card-border-radius);
-            transition: transform 0.2s, box-shadow 0.2s;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .card-course:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
         }
         .badge-year {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             padding: 0.4em 0.8em;
             border-radius: 20px;
         }
@@ -73,29 +106,19 @@
         </div>
         <div class="text-end mt-2 mt-md-0">
             <span class="badge bg-success d-inline-flex align-items-center gap-2 px-3 py-2">
-                <span class="live-pulse"></span> Sistema Attivo
+                <span class="live-pulse"></span> Aggiornato via API
             </span>
         </div>
     </div>
 
-    <!-- Filtri di ricerca -->
+    <!-- Barra di Ricerca e Filtro Anno -->
     <div class="row g-3 mb-4">
-        <div class="col-md-4">
-            <input type="text" id="searchInput" class="form-control form-control-lg shadow-sm" placeholder="🔍 Cerca materia, docente o aula...">
-        </div>
-        <div class="col-md-4">
-            <select id="courseFilter" class="form-select form-select-lg shadow-sm">
-                <option value="ALL">Tutti i Corsi di Laurea</option>
-                <option value="ECONOMIA">Economia (L-33)</option>
-                <option value="SDS">Statistica per Data Science (L-41)</option>
-                <option value="EIS">Economia, Imprese e Sostenibilità (LM-56)</option>
-                <option value="DSSA">Data Science per le Strategie Aziendali (LM-91)</option>
-                <option value="FINANCE">Finance and Insurance (LM-16)</option>
-            </select>
+        <div class="col-md-8">
+            <input type="text" id="searchInput" class="form-control form-control-lg shadow-sm" placeholder="🔍 Cerca per materia, docente o aula...">
         </div>
         <div class="col-md-4">
             <select id="yearFilter" class="form-select form-select-lg shadow-sm">
-                <option value="ALL">Tutti gli Anni di corso</option>
+                <option value="ALL">Tutti gli Anni di Corso</option>
                 <option value="1° anno">1° Anno</option>
                 <option value="2° anno">2° Anno</option>
                 <option value="3° anno">3° Anno</option>
@@ -103,97 +126,123 @@
         </div>
     </div>
 
-    <!-- Contenitore Tabelloni -->
-    <div id="lessonsContainer" class="row g-4">
-        <div class="text-center py-5">
-            <div class="spinner-border text-primary" role="status"></div>
-            <p class="mt-2 text-muted">Caricamento lezioni in corso...</p>
-        </div>
+    <!-- Navigazione a 5 Schede (Corsi di Laurea) -->
+    <ul class="nav nav-tabs nav-tabs-custom mb-4 flex-nowrap overflow-auto" id="cdlTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-ECONOMIA" data-bs-toggle="tab" data-bs-target="#content-ECONOMIA" type="button" role="tab">
+                <i class="fa-solid fa-chart-line me-1"></i> Economia (L-33)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-SDS" data-bs-toggle="tab" data-bs-target="#content-SDS" type="button" role="tab">
+                <i class="fa-solid fa-calculator me-1"></i> Statistica Data Science (L-41)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-EIS" data-bs-toggle="tab" data-bs-target="#content-EIS" type="button" role="tab">
+                <i class="fa-solid fa-leaf me-1"></i> Economia & Sostenibilità (LM-56)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-DSSA" data-bs-toggle="tab" data-bs-target="#content-DSSA" type="button" role="tab">
+                <i class="fa-solid fa-database me-1"></i> Data Science Strategie (LM-91)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-FINANCE" data-bs-toggle="tab" data-bs-target="#content-FINANCE" type="button" role="tab">
+                <i class="fa-solid fa-coins me-1"></i> Finance & Insurance (LM-16)
+            </button>
+        </li>
+    </ul>
+
+    <!-- Contenuto dei Tab -->
+    <div class="tab-content" id="cdlTabsContent">
+        <div class="tab-pane fade show active" id="content-ECONOMIA" role="tabpanel"></div>
+        <div class="tab-pane fade" id="content-SDS" role="tabpanel"></div>
+        <div class="tab-pane fade" id="content-EIS" role="tabpanel"></div>
+        <div class="tab-pane fade" id="content-DSSA" role="tabpanel"></div>
+        <div class="tab-pane fade" id="content-FINANCE" role="tabpanel"></div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 let rawLessonsData = [];
 
+const COURSES_CONFIG = [
+    { code: 'ECONOMIA', name: 'CdL Triennale in Economia (L-33)', type: 'Triennale', years: ['1° anno', '2° anno', '3° anno'] },
+    { code: 'SDS', name: 'CdL Triennale in Statistica per Data Science (L-41)', type: 'Triennale', years: ['1° anno', '2° anno', '3° anno'] },
+    { code: 'EIS', name: 'CdL Magistrale in Economia, Imprese e Sostenibilità (LM-56)', type: 'Magistrale', years: ['1° anno', '2° anno'] },
+    { code: 'DSSA', name: 'CdL Magistrale in Data Science per le Strategie Aziendali (LM-91)', type: 'Magistrale', years: ['1° anno', '2° anno'] },
+    { code: 'FINANCE', name: 'CdL Magistrale in Finance and Insurance (LM-16)', type: 'Magistrale', years: ['1° anno', '2° anno'] }
+];
+
 document.addEventListener('DOMContentLoaded', () => {
     fetch('lessons_data.json')
-        .then(res => {
-            if (!res.ok) throw new Error('File JSON non trovato');
-            return res.json();
-        })
+        .then(res => res.json())
         .then(data => {
             rawLessonsData = data;
-            renderBoard(data);
+            renderAllTabs();
         })
         .catch(err => {
-            document.getElementById('lessonsContainer').innerHTML = `
-                <div class="col-12 text-center py-5">
-                    <div class="alert alert-warning d-inline-block">
-                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
-                        Impossibile caricare i dati degli orari. Verifica che <code>lessons_data.json</code> sia disponibile.
-                    </div>
-                </div>`;
+            COURSES_CONFIG.forEach(c => {
+                document.getElementById(`content-${c.code}`).innerHTML = `
+                    <div class="alert alert-warning text-center py-4">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i> Impossibile caricare i dati da <code>lessons_data.json</code>.
+                    </div>`;
+            });
         });
 
-    document.getElementById('searchInput').addEventListener('input', applyFilters);
-    document.getElementById('courseFilter').addEventListener('change', applyFilters);
-    document.getElementById('yearFilter').addEventListener('change', applyFilters);
+    document.getElementById('searchInput').addEventListener('input', renderAllTabs);
+    document.getElementById('yearFilter').addEventListener('change', renderAllTabs);
 });
 
-function applyFilters() {
+function renderAllTabs() {
     const searchStr = document.getElementById('searchInput').value.toLowerCase();
-    const selectedCourse = document.getElementById('courseFilter').value;
     const selectedYear = document.getElementById('yearFilter').value;
 
-    const filtered = rawLessonsData.filter(item => {
-        const matchesSearch = (item.materia || '').toLowerCase().includes(searchStr) ||
-                              (item.docente || '').toLowerCase().includes(searchStr) ||
-                              (item.aula || '').toLowerCase().includes(searchStr);
-        const matchesCourse = selectedCourse === 'ALL' || item.cdl_code === selectedCourse;
-        const matchesYear = selectedYear === 'ALL' || item.anno === selectedYear;
+    COURSES_CONFIG.forEach(course => {
+        const container = document.getElementById(`content-${course.code}`);
+        
+        const courseLessons = rawLessonsData.filter(item => {
+            const matchesCode = item.cdl_code === course.code;
+            const matchesSearch = (item.materia || '').toLowerCase().includes(searchStr) ||
+                                  (item.docente || '').toLowerCase().includes(searchStr) ||
+                                  (item.aula || '').toLowerCase().includes(searchStr);
+            const matchesYear = selectedYear === 'ALL' || item.anno === selectedYear;
 
-        return matchesSearch && matchesCourse && matchesYear;
-    });
+            return matchesCode && matchesSearch && matchesYear;
+        });
 
-    renderBoard(filtered);
-}
+        if (courseLessons.length === 0) {
+            container.innerHTML = `
+                <div class="alert alert-info text-center py-4 my-3">
+                    <i class="fa-solid fa-circle-info me-2"></i> Nessuna lezione disponibile o pubblicata per questo Corso di Laurea con i filtri selezionati.
+                </div>`;
+            return;
+        }
 
-function renderBoard(data) {
-    const container = document.getElementById('lessonsContainer');
-    
-    if (data.length === 0) {
-        container.innerHTML = `
-            <div class="col-12 text-center py-5">
-                <div class="alert alert-info d-inline-block">
-                    Nessuna lezione trovata con i filtri selezionati.
-                </div>
-            </div>`;
-        return;
-    }
+        let html = `<h4 class="${course.type === 'Triennale' ? 'section-header-triennale' : 'section-header-magistrale'} fw-bold">
+                        ${course.name} <span class="badge bg-secondary ms-2 fs-6">${course.type}</span>
+                    </h4>`;
 
-    // Raggruppamento per Corso e Anno
-    const groups = {};
-    data.forEach(item => {
-        const key = `${item.cdl_name} - ${item.anno}`;
-        if (!groups[key]) groups[key] = { meta: item, lessons: [] };
-        groups[key].lessons.push(item);
-    });
+        course.years.forEach(year => {
+            if (selectedYear !== 'ALL' && selectedYear !== year) return;
 
-    let html = '';
-    Object.keys(groups).forEach(groupKey => {
-        const group = groups[groupKey];
-        const meta = group.meta;
-        const lessons = group.lessons;
+            const yearLessons = courseLessons.filter(l => l.anno === year);
+            if (yearLessons.length === 0) return;
 
-        html += `
-        <div class="col-12 mb-3">
-            <div class="card card-course shadow-sm">
+            const firstLesson = yearLessons[0];
+            const badgeColor = firstLesson.color || '#1e3a8a';
+
+            html += `
+            <div class="card card-course">
                 <div class="card-header bg-white border-0 pt-3 pb-2 d-flex justify-content-between align-items-center">
-                    <h5 class="m-0 font-weight-bold" style="color: ${meta.color || '#1e3a8a'}">
-                        <i class="fa-solid fa-book-open me-2"></i>${meta.cdl_name}
+                    <h5 class="m-0 font-weight-bold" style="color: ${badgeColor}">
+                        <i class="fa-solid fa-layer-group me-2"></i>${year}
                     </h5>
-                    <span class="badge badge-year text-white" style="background-color: ${meta.color || '#1e3a8a'}">
-                        ${meta.anno}
+                    <span class="badge badge-year text-white" style="background-color: ${badgeColor}">
+                        ${yearLessons.length} lezioni scaricate
                     </span>
                 </div>
                 <div class="card-body p-0">
@@ -203,14 +252,14 @@ function renderBoard(data) {
                                 <tr>
                                     <th style="width: 120px;">Data</th>
                                     <th style="width: 100px;">Giorno</th>
-                                    <th style="width: 140px;">Orario</th>
+                                    <th style="width: 130px;">Orario</th>
                                     <th>Insegnamento</th>
                                     <th>Docente</th>
-                                    <th>Aula</th>
+                                    <th>Aula / Ubicazione</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                ${lessons.map(l => `
+                                ${yearLessons.map(l => `
                                     <tr>
                                         <td><i class="fa-regular fa-calendar me-1 text-muted"></i><strong>${l.data}</strong></td>
                                         <td><span class="badge bg-light text-dark border">${l.giorno}</span></td>
@@ -224,11 +273,11 @@ function renderBoard(data) {
                         </table>
                     </div>
                 </div>
-            </div>
-        </div>`;
-    });
+            </div>`;
+        });
 
-    container.innerHTML = html;
+        container.innerHTML = html;
+    });
 }
 </script>
 </body>
