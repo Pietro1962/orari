@@ -1,5 +1,6 @@
 import json
 import urllib.request
+import urllib.parse
 from datetime import datetime
 
 # Elenco dei 12 calendari UP Cineca A.A. 2026/2027
@@ -18,28 +19,62 @@ CALENDARI = [
     {"sheet": "Finance II", "cdl_code": "FINANCE", "cdl_name": "CdL Magistrale in Finance and Insurance", "cdl_type": "Magistrale", "year_order": 2, "anno": "2° anno", "color": "#9f1239", "id": "6a6326b34a237300196859e1"}
 ]
 
+# Definizione intervallo accademico
+PRIMA_DATA = "2026-09-01T00:00:00.000Z"
+ULTIMA_DATA = "2027-07-31T23:59:59.000Z"
+
 all_lessons = []
+giorni_map = {0: 'Lunedì', 1: 'Martedì', 2: 'Mercoledì', 3: 'Giovedì', 4: 'Venerdì', 5: 'Sabato', 6: 'Domenica'}
 
 for cal in CALENDARI:
-    url = f"https://unical.prod.up.cineca.it/api/CalendarioPubblico/getEventiCalendarioPubblico?linkCalendarioId={cal['id']}"
+    params = urllib.parse.urlencode({
+        'linkCalendarioId': cal['id'],
+        'primaData': PRIMA_DATA,
+        'ultimaData': ULTIMA_DATA
+    })
+    url = f"https://unical.prod.up.cineca.it/api/CalendarioPubblico/getEventiCalendarioPubblico?{params}"
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    
     try:
         with urllib.request.urlopen(req) as response:
             data = json.loads(response.read().decode('utf-8'))
-            eventi = data.get('eventi', []) if isinstance(data, dict) else []
+            
+            # Gestione sia di lista diretta che di dizionario con chiave 'eventi' o 'eventiCalendario'
+            eventi = []
+            if isinstance(data, list):
+                eventi = data
+            elif isinstance(data, dict):
+                eventi = data.get('eventi', data.get('eventiCalendario', []))
+
             for ev in eventi:
-                # Estrazione e pulizia campi
-                materia = ev.get('insegnamento', ev.get('title', 'Lezione'))
-                docente = ev.get('docente', ev.get('docenti', 'Docente da definire'))
-                aula = ev.get('aula', ev.get('aule', 'Aula TBD'))
+                # Estrazione dati materia
+                materia = ev.get('title', ev.get('insegnamento', ev.get('nomeEvent', 'Lezione')))
                 
-                # Conversione orari e giorni
-                start_dt = datetime.fromisoformat(ev['start'].replace('Z', '+00:00'))
-                end_dt = datetime.fromisoformat(ev['end'].replace('Z', '+00:00'))
+                # Estrazione docenti ed aule dalle risorse annidate se presenti
+                docenti_list = []
+                aule_list = []
+                for res in ev.get('risorse', []):
+                    if res.get('type') == 'DOCENTE' or 'docente' in res.get('tipo', '').lower():
+                        docenti_list.append(res.get('nome', ''))
+                    elif res.get('type') == 'AULA' or 'aula' in res.get('tipo', '').lower():
+                        aule_list.append(res.get('nome', ''))
                 
-                giorni_map = {0: 'Lunedì', 1: 'Martedì', 2: 'Mercoledì', 3: 'Giovedì', 4: 'Venerdì', 5: 'Sabato', 6: 'Domenica'}
+                docente = ", ".join(docenti_list) if docenti_list else ev.get('docente', 'Docente da definire')
+                aula = ", ".join(aule_list) if aule_list else ev.get('aula', 'Aula TBD')
+                
+                # Parsing orari
+                start_raw = ev.get('start', ev.get('oraInizio'))
+                end_raw = ev.get('end', ev.get('oraFine'))
+                
+                if not start_raw or not end_raw:
+                    continue
+
+                start_dt = datetime.fromisoformat(start_raw.replace('Z', '+00:00'))
+                end_dt = datetime.fromisoformat(end_raw.replace('Z', '+00:00'))
+                
                 giorno_ita = giorni_map.get(start_dt.weekday(), '')
                 orario_str = f"{start_dt.strftime('%H:%M')} - {end_dt.strftime('%H:%M')}"
+                data_str = start_dt.strftime('%Y-%m-%d')
                 
                 lesson_obj = {
                     "sheet": cal["sheet"],
@@ -49,6 +84,7 @@ for cal in CALENDARI:
                     "year_order": cal["year_order"],
                     "anno": cal["anno"],
                     "color": cal["color"],
+                    "data": data_str,
                     "giorno": giorno_ita,
                     "orario": orario_str,
                     "materia": materia,
@@ -56,6 +92,8 @@ for cal in CALENDARI:
                     "aula": aula
                 }
                 all_lessons.append(lesson_obj)
+                
+        print(f"[{cal['sheet']}] Scaricati {len(eventi)} eventi.")
     except Exception as e:
         print(f"Errore recupero {cal['sheet']}: {e}")
 
@@ -63,4 +101,4 @@ for cal in CALENDARI:
 with open('lessons_data.json', 'w', encoding='utf-8') as f:
     json.dump(all_lessons, f, ensure_ascii=False, indent=4)
 
-print(f"Recuperati con successo {len(all_lessons)} eventi da CINECA.")
+print(f"\nOperazione completata! Recuperati in totale {len(all_lessons)} eventi da CINECA.")
