@@ -1,7 +1,7 @@
 import json
 import urllib.request
 import urllib.parse
-from datetime import datetime
+from datetime import datetime, timedelta
 
 CALENDARI = [
     {"sheet": "Economia I", "cdl_code": "ECONOMIA", "cdl_name": "CdL Triennale in Economia", "cdl_type": "Triennale", "year_order": 1, "anno": "1° anno", "color": "#1e3a8a", "id": "6a63231e7e6b9600bbc5fd93"},
@@ -18,9 +18,15 @@ CALENDARI = [
     {"sheet": "Finance II", "cdl_code": "FINANCE", "cdl_name": "CdL Magistrale in Finance and Insurance", "cdl_type": "Magistrale", "year_order": 2, "anno": "2° anno", "color": "#9f1239", "id": "6a6326b34a237300196859e1"}
 ]
 
-# Formato data accettato da UP Cineca
-PRIMA_DATA = "2026-09-01"
-ULTIMA_DATA = "2027-07-31"
+# Calcolo dinamico date: dagli ultimi 6 mesi ai prossimi 6 mesi
+now = datetime.now()
+prima_dt = now - timedelta(days=180)
+ultima_dt = now + timedelta(days=180)
+
+PRIMA_DATA = prima_dt.strftime('%Y-%m-%d')
+ULTIMA_DATA = ultima_dt.strftime('%Y-%m-%d')
+
+print(f"Intervallo di ricerca: da {PRIMA_DATA} a {ULTIMA_DATA}")
 
 all_lessons = []
 giorni_map = {0: 'Lunedì', 1: 'Martedì', 2: 'Mercoledì', 3: 'Giovedì', 4: 'Venerdì', 5: 'Sabato', 6: 'Domenica'}
@@ -36,7 +42,7 @@ for cal in CALENDARI:
     url = f"https://unical.prod.up.cineca.it/api/CalendarioPubblico/getEventiCalendarioPubblico?{params}"
     
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Accept': 'application/json, text/plain, */*'
     }
     
@@ -52,6 +58,8 @@ for cal in CALENDARI:
                 eventi = data
             elif isinstance(data, dict):
                 eventi = data.get('eventi', data.get('eventiCalendario', []))
+
+            print(f"[{cal['sheet']}] Trovati {len(eventi)} eventi da API Cineca.")
 
             for ev in eventi:
                 materia = ev.get('title', ev.get('insegnamento', ev.get('nomeEvent', 'Lezione')))
@@ -92,12 +100,10 @@ for cal in CALENDARI:
                     "aula": aula
                 }
                 all_lessons.append(lesson_obj)
-                
-        print(f"[{cal['sheet']}] Estratti {len(eventi)} eventi.")
     except Exception as e:
-        print(f"Errore su {cal['sheet']}: {e}")
+        print(f"Errore recupero {cal['sheet']}: {e}")
 
 with open('lessons_data.json', 'w', encoding='utf-8') as f:
     json.dump(all_lessons, f, ensure_ascii=False, indent=4)
 
-print(f"Totale lezioni salvate: {len(all_lessons)}")
+print(f"\n--- COMPLETATO --- Totale lezioni estratte e salvate: {len(all_lessons)}")
