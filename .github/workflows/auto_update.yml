@@ -6,15 +6,18 @@ on:
     - cron: '0 2 * * *'
   workflow_dispatch: # Permette l'avvio manuale con un click
 
+permissions:
+  contents: write
+
 jobs:
   update-schedules:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configura Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
