@@ -1,9 +1,8 @@
 import json
 import urllib.request
 import urllib.parse
-from datetime import datetime, timedelta
+from datetime import datetime
 
-# 12 Calendari UP Cineca A.A. 2026/2027 con linkCalendarioId aggiornati
 CALENDARI = [
     {"sheet": "Economia I", "cdl_code": "ECONOMIA", "cdl_name": "CdL Triennale in Economia", "cdl_type": "Triennale", "year_order": 1, "anno": "1° anno", "color": "#1e3a8a", "id": "6a63231e7e6b9600bbc5fd93"},
     {"sheet": "Economia II", "cdl_code": "ECONOMIA", "cdl_name": "CdL Triennale in Economia", "cdl_type": "Triennale", "year_order": 2, "anno": "2° anno", "color": "#1e40af", "id": "6a632535aae8aa00b5594f76"},
@@ -19,38 +18,22 @@ CALENDARI = [
     {"sheet": "Finance II", "cdl_code": "FINANCE", "cdl_name": "CdL Magistrale in Finance and Insurance", "cdl_type": "Magistrale", "year_order": 2, "anno": "2° anno", "color": "#9f1239", "id": "6a6326b34a237300196859e1"}
 ]
 
-# Definizione intervallo accademico dinamico per coprire l'A.A. 2026/2027
-now = datetime.now()
-prima_dt = datetime(2026, 9, 1) if now.year < 2026 else now - timedelta(days=30)
-ultima_dt = datetime(2027, 7, 31)
-
-PRIMA_DATA = prima_dt.strftime('%Y-%m-%dT00:00:00.000Z')
-ULTIMA_DATA = ultima_dt.strftime('%Y-%m-%dT23:59:59.000Z')
+PRIMA_DATA = "2026-09-01T00:00:00.000Z"
+ULTIMA_DATA = "2027-07-31T23:59:59.000Z"
 
 all_lessons = []
 giorni_map = {0: 'Lunedì', 1: 'Martedì', 2: 'Mercoledì', 3: 'Giovedì', 4: 'Venerdì', 5: 'Sabato', 6: 'Domenica'}
 
 for cal in CALENDARI:
-    # Payload sia per chiamate GET che POST
-    params = {
+    # URL di chiamata per l'API Cineca UP senza prefisso porta
+    base_url = "https://unical.prod.up.cineca.it/api/getEventiCalendarioPubblico"
+    params = urllib.parse.urlencode({
         'linkCalendarioId': cal['id'],
         'primaData': PRIMA_DATA,
-        'ultimaData': ULTIMA_DATA,
-        'mostraAnnullati': False,
-        'mostraBloccati': False
-    }
-    
-    eventi = []
-    
-    # Tentativo 1: Chiamata GET standard
-    query_str = urllib.parse.urlencode({
-        'linkCalendarioId': cal['id'],
-        'primaData': PRIMA_DATA,
-        'ultimaData': ULTIMA_DATA,
-        'mostraAnnullati': 'false',
-        'mostraBloccati': 'false'
+        'ultimaData': ULTIMA_DATA
     })
-    url_get = f"https://unical.prod.up.cineca.it/api/CalendarioPubblico/getEventiCalendarioPubblico?{query_str}"
+    
+    url = f"{base_url}?{params}"
     
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -58,8 +41,9 @@ for cal in CALENDARI:
         'Referer': f"https://unical.prod.up.cineca.it/calendarioPubblico/linkCalendarioId={cal['id']}"
     }
     
-    req = urllib.request.Request(url_get, headers=headers)
+    eventi = []
     try:
+        req = urllib.request.Request(url, headers=headers)
         with urllib.request.urlopen(req) as response:
             data = json.loads(response.read().decode('utf-8'))
             if isinstance(data, list):
@@ -67,29 +51,14 @@ for cal in CALENDARI:
             elif isinstance(data, dict):
                 eventi = data.get('eventi', data.get('eventiCalendario', []))
     except Exception as e:
-        # Tentativo 2: Chiamata POST JSON
-        try:
-            url_post = "https://unical.prod.up.cineca.it/api/CalendarioPubblico/getEventiCalendarioPubblico"
-            post_data = json.dumps(params).encode('utf-8')
-            headers_post = headers.copy()
-            headers_post['Content-Type'] = 'application/json;charset=UTF-8'
-            
-            req_post = urllib.request.Request(url_post, data=post_data, headers=headers_post, method='POST')
-            with urllib.request.urlopen(req_post) as response:
-                data = json.loads(response.read().decode('utf-8'))
-                if isinstance(data, list):
-                    eventi = data
-                elif isinstance(data, dict):
-                    eventi = data.get('eventi', data.get('eventiCalendario', []))
-        except Exception as ex:
-            print(f"Errore recupero [{cal['sheet']}]: {ex}")
+        print(f"[{cal['sheet']}] Avviso recupero API: {e}")
 
-    print(f"[{cal['sheet']}] Estratti {len(eventi)} eventi da UP Cineca.")
+    print(f"[{cal['sheet']}] Estratti {len(eventi)} eventi.")
 
     for ev in eventi:
         materia = ev.get('title', ev.get('insegnamento', ev.get('nomeEvent', 'Lezione')))
-        
         docenti_list, aule_list = [], []
+        
         for res in ev.get('risorse', []):
             tipo = str(res.get('type', '') or res.get('tipo', '')).upper()
             nome = res.get('nome', '') or res.get('description', '')
@@ -97,7 +66,7 @@ for cal in CALENDARI:
                 docenti_list.append(nome)
             elif 'AULA' in tipo:
                 aule_list.append(nome)
-        
+                
         docente = ", ".join(docenti_list) if docenti_list else ev.get('docente', 'Docente da definire')
         aula = ", ".join(aule_list) if aule_list else ev.get('aula', 'Aula TBD')
         
@@ -129,8 +98,8 @@ for cal in CALENDARI:
         }
         all_lessons.append(lesson_obj)
 
-# Salvataggio del file JSON con l'elenco completo
+# Salvataggio dati scaricati nel JSON
 with open('lessons_data.json', 'w', encoding='utf-8') as f:
     json.dump(all_lessons, f, ensure_ascii=False, indent=4)
 
-print(f"\n--- COMPLETATO --- Totale lezioni scaricate per A.A. 2026/2027: {len(all_lessons)}")
+print(f"\n--- COMPLETATO --- Totale lezioni scaricate: {len(all_lessons)}")
