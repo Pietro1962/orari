@@ -2382,7 +2382,7 @@
         "orario": "14:00 - 16:00",
         "materia": "DEMOGRAFIA",
         "docente": "STRANGES MANUELA",
-        "aula": "Laboratorio didattico Informatica 3 (Cubo 3D)"
+        "aula": "AULETTA SEMINARI (Cubo 1C)"
     },
     {
         "sheet": "SDS I",
@@ -3549,7 +3549,7 @@
         "color": "#047857",
         "data": "2026-09-21",
         "giorno": "Lunedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MACROECONOMIA",
         "docente": "SMIRNOVA JANNA",
         "aula": "EP3 (Cubo 1D)"
@@ -3579,7 +3579,7 @@
         "color": "#047857",
         "data": "2026-09-22",
         "giorno": "Martedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MATEMATICA FINANZIARIA",
         "docente": "STAINO Alessandro",
         "aula": "EP3 (Cubo 1D)"
@@ -3714,7 +3714,7 @@
         "color": "#047857",
         "data": "2026-09-28",
         "giorno": "Lunedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MACROECONOMIA",
         "docente": "SMIRNOVA JANNA",
         "aula": "EP3 (Cubo 1D)"
@@ -3759,7 +3759,7 @@
         "color": "#047857",
         "data": "2026-09-29",
         "giorno": "Martedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MATEMATICA FINANZIARIA",
         "docente": "STAINO Alessandro",
         "aula": "EP3 (Cubo 1D)"
@@ -3894,7 +3894,7 @@
         "color": "#047857",
         "data": "2026-10-05",
         "giorno": "Lunedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MACROECONOMIA",
         "docente": "SMIRNOVA JANNA",
         "aula": "EP3 (Cubo 1D)"
@@ -3939,7 +3939,7 @@
         "color": "#047857",
         "data": "2026-10-06",
         "giorno": "Martedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MATEMATICA FINANZIARIA",
         "docente": "STAINO Alessandro",
         "aula": "EP3 (Cubo 1D)"
@@ -4074,7 +4074,7 @@
         "color": "#047857",
         "data": "2026-10-12",
         "giorno": "Lunedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MACROECONOMIA",
         "docente": "SMIRNOVA JANNA",
         "aula": "EP3 (Cubo 1D)"
@@ -4119,7 +4119,7 @@
         "color": "#047857",
         "data": "2026-10-13",
         "giorno": "Martedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MATEMATICA FINANZIARIA",
         "docente": "STAINO Alessandro",
         "aula": "EP3 (Cubo 1D)"
@@ -4254,7 +4254,7 @@
         "color": "#047857",
         "data": "2026-10-19",
         "giorno": "Lunedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MACROECONOMIA",
         "docente": "SMIRNOVA JANNA",
         "aula": "EP3 (Cubo 1D)"
@@ -4299,7 +4299,7 @@
         "color": "#047857",
         "data": "2026-10-20",
         "giorno": "Martedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MATEMATICA FINANZIARIA",
         "docente": "STAINO Alessandro",
         "aula": "EP3 (Cubo 1D)"
@@ -4434,7 +4434,7 @@
         "color": "#047857",
         "data": "2026-10-26",
         "giorno": "Lunedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MACROECONOMIA",
         "docente": "SMIRNOVA JANNA",
         "aula": "EP3 (Cubo 1D)"
@@ -4479,7 +4479,7 @@
         "color": "#047857",
         "data": "2026-10-27",
         "giorno": "Martedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MATEMATICA FINANZIARIA",
         "docente": "STAINO Alessandro",
         "aula": "EP3 (Cubo 1D)"
@@ -4614,7 +4614,7 @@
         "color": "#047857",
         "data": "2026-11-02",
         "giorno": "Lunedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MACROECONOMIA",
         "docente": "SMIRNOVA JANNA",
         "aula": "EP3 (Cubo 1D)"
@@ -4659,7 +4659,7 @@
         "color": "#047857",
         "data": "2026-11-03",
         "giorno": "Martedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MATEMATICA FINANZIARIA",
         "docente": "STAINO Alessandro",
         "aula": "EP3 (Cubo 1D)"
@@ -4794,7 +4794,7 @@
         "color": "#047857",
         "data": "2026-11-09",
         "giorno": "Lunedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MACROECONOMIA",
         "docente": "SMIRNOVA JANNA",
         "aula": "EP3 (Cubo 1D)"
@@ -4839,7 +4839,7 @@
         "color": "#047857",
         "data": "2026-11-10",
         "giorno": "Martedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MATEMATICA FINANZIARIA",
         "docente": "STAINO Alessandro",
         "aula": "EP3 (Cubo 1D)"
@@ -4974,7 +4974,7 @@
         "color": "#047857",
         "data": "2026-11-16",
         "giorno": "Lunedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MACROECONOMIA",
         "docente": "SMIRNOVA JANNA",
         "aula": "EP3 (Cubo 1D)"
@@ -5019,7 +5019,7 @@
         "color": "#047857",
         "data": "2026-11-17",
         "giorno": "Martedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MATEMATICA FINANZIARIA",
         "docente": "STAINO Alessandro",
         "aula": "EP3 (Cubo 1D)"
@@ -5154,7 +5154,7 @@
         "color": "#047857",
         "data": "2026-11-23",
         "giorno": "Lunedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MACROECONOMIA",
         "docente": "SMIRNOVA JANNA",
         "aula": "EP3 (Cubo 1D)"
@@ -5199,7 +5199,7 @@
         "color": "#047857",
         "data": "2026-11-24",
         "giorno": "Martedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MATEMATICA FINANZIARIA",
         "docente": "STAINO Alessandro",
         "aula": "EP3 (Cubo 1D)"
@@ -5334,7 +5334,7 @@
         "color": "#047857",
         "data": "2026-11-30",
         "giorno": "Lunedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MACROECONOMIA",
         "docente": "SMIRNOVA JANNA",
         "aula": "EP3 (Cubo 1D)"
@@ -5379,7 +5379,7 @@
         "color": "#047857",
         "data": "2026-12-01",
         "giorno": "Martedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MATEMATICA FINANZIARIA",
         "docente": "STAINO Alessandro",
         "aula": "EP3 (Cubo 1D)"
@@ -5514,7 +5514,7 @@
         "color": "#047857",
         "data": "2026-12-07",
         "giorno": "Lunedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MACROECONOMIA",
         "docente": "SMIRNOVA JANNA",
         "aula": "EP3 (Cubo 1D)"
@@ -5649,7 +5649,7 @@
         "color": "#047857",
         "data": "2026-12-14",
         "giorno": "Lunedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MACROECONOMIA",
         "docente": "SMIRNOVA JANNA",
         "aula": "EP3 (Cubo 1D)"
@@ -5694,7 +5694,7 @@
         "color": "#047857",
         "data": "2026-12-15",
         "giorno": "Martedì",
-        "orario": "15:00 - 17:00",
+        "orario": "14:00 - 16:00",
         "materia": "MATEMATICA FINANZIARIA",
         "docente": "STAINO Alessandro",
         "aula": "EP3 (Cubo 1D)"
@@ -6117,7 +6117,7 @@
         "orario": "11:00 - 13:00",
         "materia": "DEMOGRAFIA COMPUTAZIONALE",
         "docente": "STRANGES MANUELA",
-        "aula": "Laboratorio didattico Informatica 3 (Cubo 3D)"
+        "aula": "AULA SEMINARI (Cubo 0C)"
     },
     {
         "sheet": "DSSA I",
@@ -7224,21 +7224,6 @@
         "color": "#7e22ce",
         "data": "2026-09-28",
         "giorno": "Lunedì",
-        "orario": "11:00 - 13:00",
-        "materia": "STATISTICA PER LE DECISIONI AZIENDALI - TECNICHE DI APPRENDIMENTO E RETI NEURALI",
-        "docente": "COZZUCOLI PAOLO CARMELO",
-        "aula": "Laboratorio didattico Informatica 3 (Cubo 3D)"
-    },
-    {
-        "sheet": "DSSA II",
-        "cdl_code": "DSSA",
-        "cdl_name": "CdL Magistrale in Data Science per le Strategie Aziendali",
-        "cdl_type": "Magistrale",
-        "year_order": 2,
-        "anno": "2° anno",
-        "color": "#7e22ce",
-        "data": "2026-09-28",
-        "giorno": "Lunedì",
         "orario": "14:30 - 16:30",
         "materia": "STATISTICA PER LE DECISIONI AZIENDALI - METODI STATISTICI PER LE STRATEGIE AZIENDALI",
         "docente": "CONDINO Francesca",
@@ -7273,6 +7258,21 @@
         "materia": "STATISTICA PER LE DECISIONI AZIENDALI - METODI STATISTICI PER LE STRATEGIE AZIENDALI",
         "docente": "CONDINO Francesca",
         "aula": "Laboratorio statistico-informatico (Cubo 3D)"
+    },
+    {
+        "sheet": "DSSA II",
+        "cdl_code": "DSSA",
+        "cdl_name": "CdL Magistrale in Data Science per le Strategie Aziendali",
+        "cdl_type": "Magistrale",
+        "year_order": 2,
+        "anno": "2° anno",
+        "color": "#7e22ce",
+        "data": "2026-09-29",
+        "giorno": "Martedì",
+        "orario": "14:00 - 16:00",
+        "materia": "STATISTICA PER LE DECISIONI AZIENDALI - TECNICHE DI APPRENDIMENTO E RETI NEURALI",
+        "docente": "COZZUCOLI PAOLO CARMELO",
+        "aula": "Laboratorio didattico Informatica 3 (Cubo 3D)"
     },
     {
         "sheet": "DSSA II",
@@ -7527,7 +7527,7 @@
         "orario": "09:00 - 11:00",
         "materia": "Business Intelligence e Big Data Analytics - BUSINESS INTELLIGENCE",
         "docente": "CANTINI Riccardo",
-        "aula": "Laboratorio didattico Informatica 3 (Cubo 3D)"
+        "aula": "AULETTA SEMINARI (Cubo 1C)"
     },
     {
         "sheet": "DSSA II",
@@ -7557,7 +7557,7 @@
         "orario": "09:00 - 11:00",
         "materia": "Business Intelligence e Big Data Analytics - BUSINESS INTELLIGENCE",
         "docente": "D'AGOSTINO CARMEN",
-        "aula": "Laboratorio didattico Informatica 3 (Cubo 3D)"
+        "aula": "AULETTA SEMINARI (Cubo 1C)"
     },
     {
         "sheet": "DSSA II",
