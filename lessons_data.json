@@ -2529,21 +2529,6 @@
         "color": "#065f46",
         "data": "2026-10-21",
         "giorno": "Mercoledì",
-        "orario": "09:00 - 11:00",
-        "materia": "ANALISI MATEMATICA 1",
-        "docente": "CIANCIARUSO FILOMENA",
-        "aula": "EP5 (Cubo 1D)"
-    },
-    {
-        "sheet": "SDS I",
-        "cdl_code": "SDS",
-        "cdl_name": "CdL Triennale in Statistica per Data Science",
-        "cdl_type": "Triennale",
-        "year_order": 1,
-        "anno": "1° anno",
-        "color": "#065f46",
-        "data": "2026-10-21",
-        "giorno": "Mercoledì",
         "orario": "11:00 - 13:00",
         "materia": "STATISTICA",
         "docente": "PERRI Pier Francesco",
@@ -2578,21 +2563,6 @@
         "materia": "DEMOGRAFIA",
         "docente": "STRANGES MANUELA",
         "aula": "Laboratorio didattico Informatica 3 (Cubo 3D)"
-    },
-    {
-        "sheet": "SDS I",
-        "cdl_code": "SDS",
-        "cdl_name": "CdL Triennale in Statistica per Data Science",
-        "cdl_type": "Triennale",
-        "year_order": 1,
-        "anno": "1° anno",
-        "color": "#065f46",
-        "data": "2026-10-22",
-        "giorno": "Giovedì",
-        "orario": "11:00 - 13:00",
-        "materia": "STATISTICA",
-        "docente": "GIORDANO Sabrina",
-        "aula": "EP5 (Cubo 1D)"
     },
     {
         "sheet": "SDS I",
